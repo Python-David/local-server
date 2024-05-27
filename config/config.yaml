@@ -1,0 +1,15 @@
+rtu:
+  ip: "127.0.0.1"
+  port: 5020
+  protocol: "Modbus"
+  communication_type: "tcp"
+  timeout: 10
+  retries: 3
+
+cloud:
+  api_url: "https://your-django-app.com/api/data"
+  api_key: "your-api-key"
+
+logging:
+  level: "INFO"
+  file: "logs/local_server.log"
