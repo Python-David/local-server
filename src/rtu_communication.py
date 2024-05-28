@@ -10,13 +10,14 @@ from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadDecoder
 
+from config.settings import get_settings
 from mapping import mapping
 
-with open("config/config.yaml", "r") as config_file:
-    config = yaml.safe_load(config_file)
+# Load settings
+settings = get_settings()
 
 # Setup logging
-logging.basicConfig(filename=config['logging']['file'], level=config['logging']['level'])
+logging.basicConfig(filename=settings.log_file, level=settings.log_level, format=settings.log_format)
 logger = logging.getLogger(__name__)
 
 
@@ -110,10 +111,10 @@ class AsyncRTUConnection:
 
 async def main():
     rtu_connection = AsyncRTUConnection(
-        ip=config['rtu']['ip'],
-        port=config['rtu']['port'],
-        timeout=config['rtu']['timeout'],
-        retries=config['rtu']['retries']
+        ip=settings.rtu_ip,
+        port=settings.rtu_port,
+        timeout=settings.rtu_timeout,
+        retries=settings.rtu_retries
     )
     connected = await rtu_connection.connect()
     data = await rtu_connection.poll_data()
