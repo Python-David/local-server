@@ -1,4 +1,5 @@
 from functools import lru_cache
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
@@ -36,6 +37,10 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_file: str = "logs/local_server.log"
     log_format: str = "%(asctime)s -%(levelname)s - %(module)s:%(funcName)s::ln.%(lineno)s:: >%(message)s<"
+
+    # App Configuration
+
+    polling_interval: int = 5
 
     class Config:
         env_file = ".env"

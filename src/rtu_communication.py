@@ -1,12 +1,8 @@
 import asyncio
-
 import logging
 from datetime import datetime
 
-import yaml
 from pymodbus.client import AsyncModbusTcpClient
-
-# Load configuration
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadDecoder
 

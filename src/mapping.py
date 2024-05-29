@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import List, Dict, Union
+from typing import List
+
+from pydantic import BaseModel
 
 
 class RegisterMapping(BaseModel):
@@ -13,8 +14,6 @@ class Mapping(BaseModel):
     holding_registers: List[RegisterMapping]
     coils: List[RegisterMapping]
 
-
-# Example mapping based on your provided address ranges
 
 # TODO 1. We can make this more dynamic, probably filling it up from a .csv or .yaml file
 mapping = Mapping(

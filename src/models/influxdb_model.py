@@ -2,6 +2,7 @@ import logging
 
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import ASYNCHRONOUS
+
 from config.settings import get_settings
 
 # Load settings

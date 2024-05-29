@@ -2,9 +2,9 @@ import asyncio
 import logging
 
 from config.settings import get_settings
-from views.api import app
-from rtu_communication import AsyncRTUConnection
 from controllers.data_controller import DataController
+from rtu_communication import AsyncRTUConnection
+from views.api import app
 
 # Load settings
 settings = get_settings()
@@ -38,7 +38,7 @@ async def poll_rtu_data():
                 await data_controller.process_data(data)
         except Exception as e:
             logger.error(f"Error during data polling or processing: {e}")
-        await asyncio.sleep(5)  # Polling interval set to 5 seconds
+        await asyncio.sleep(settings.polling_interval)  # Polling interval set to 5 seconds
 
 
 @app.on_event("shutdown")
@@ -47,5 +47,6 @@ async def shutdown_event():
     data_controller.close()
 
 if __name__ == "__main__":
+    # TODO - Remember to review this part for production
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
