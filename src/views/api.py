@@ -1,40 +1,45 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+import logging
 
-from src.controllers.data_controller import DataController
+from fastapi import APIRouter, HTTPException
 
-app = FastAPI()
+from config.settings import get_settings
+from src.models.command_model import CommandRequest
+from src.utils import get_rtu_connection
 
-data_controller = DataController()
+settings = get_settings()
 
+# Setup logging
+logging.basicConfig(
+    filename=settings.log_file, level=settings.log_level, format=settings.log_format
+)
+logger = logging.getLogger(__name__)
 
-class DataPayload(BaseModel):
-    phase_a_current: float
-    phase_b_current: float
-    phase_c_current: float
-    neutral_current: float
-    phase_a_voltage: float
-    phase_b_voltage: float
-    phase_c_voltage: float
-    tap_position: int
-    active_power: float
-    reactive_power: float
-    apparent_power: float
-    power_factor: float
-    frequency: float
-    active_energy: int
-    reactive_energy: int
+router = APIRouter()
 
 
-@app.post("/api/data")
-async def receive_data(data: DataPayload):
+@router.post("/execute_command/")
+async def execute_command(request: CommandRequest):
+    rtu_connection = get_rtu_connection()
     try:
-        await data_controller.process_data(data.dict())
+        logger.info(
+            f"Executing command: {request.action} on device ID: {request.device_id} with value: {request.value}"
+        )
+        success = await rtu_connection.execute_command(
+            request.action, request.device_id, request.value
+        )
+        if not success:
+            logger.error(
+                f"Failed to execute command: {request.action} on device ID: {request.device_id} with value: {request.value}"
+            )
+            raise HTTPException(status_code=400, detail="Failed to execute command")
+        logger.info(
+            f"Successfully executed command: {request.action} on device ID: {request.device_id} with value: {request.value}"
+        )
         return {"status": "success"}
+    except HTTPException as e:
+        logger.error(f"HTTPException: {e.detail}")
+        raise e
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.on_event("shutdown")
-def shutdown_event():
-    data_controller.close()
+        logger.exception(f"An error occurred while executing the command: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")

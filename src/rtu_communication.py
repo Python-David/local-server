@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.constants import Endian
-from pymodbus.payload import BinaryPayloadDecoder
+from pymodbus.payload import BinaryPayloadDecoder, BinaryPayloadBuilder
 
 from config.settings import get_settings
 from mapping import mapping
@@ -95,6 +95,25 @@ class AsyncRTUConnection:
         except Exception as e:
             logger.exception("Exception while polling RTU: %s", e)
         return None
+
+    async def execute_command(self, action, device_id, value):
+        try:
+            if action == "write_coil":
+                address = int(device_id)
+                await self.client.write_coil(address, bool(value))
+            elif action == "write_register":
+                address = int(device_id)
+                builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
+                builder.add_32bit_float(value)
+                payload = builder.to_registers()
+                await self.client.write_registers(address, payload)
+            else:
+                logger.error("Unsupported action: %s", action)
+                return False
+            return True
+        except Exception as e:
+            logger.exception("Exception while executing command: %s", e)
+            return False
 
     async def close(self):
         """
