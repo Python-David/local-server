@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     log_format: str = "%(asctime)s -%(levelname)s - %(module)s:%(funcName)s::ln.%(lineno)s:: >%(message)s<"
 
     # App Configuration
-
     polling_interval: int = 5
+    django_api_url: str = "https://httpbin.org/post"  # This is a mock service for now
 
     class Config:
         env_file = ".env"

@@ -97,6 +97,20 @@ class AsyncRTUConnection:
         return None
 
     async def execute_command(self, action, device_id, value):
+        """
+        Execute a command on the RTU.
+
+        Parameters:
+        action (str): The type of action to perform. Supported actions are "write_coil" and "write_register".
+        device_id (int): The address of the device to target.
+        value (bool or float): The value to write to the device. For "write_coil", this should be a boolean. For "write_register", this should be a float.
+
+        Returns:
+        bool: True if the command was executed successfully, False otherwise.
+
+        Exceptions:
+        Logs exceptions encountered during the command execution and returns False.
+        """
         try:
             if action == "write_coil":
                 address = int(device_id)
