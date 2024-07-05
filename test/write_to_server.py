@@ -20,14 +20,14 @@ async def modify_and_verify_values():
         for register in mapping.holding_registers:
             if register.data_type == "float":
                 builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
-                builder.add_32bit_float(float(register.address + 1525.987))  # Example value
+                builder.add_32bit_float(float(register.address + 89))  # Example value
                 payload = builder.to_registers()
                 await client.write_registers(register.address, payload)
             else:
-                await client.write_register(register.address, register.address + 1000)  # Example value
+                await client.write_register(register.address, register.address + 35)  # Example value
 
         for coil in mapping.coils:
-            await client.write_coil(coil.address, False)  # Example value to True
+            await client.write_coil(coil.address, True)  # Example value to True
 
         # Read back the values to verify changes
         for register in mapping.holding_registers:
